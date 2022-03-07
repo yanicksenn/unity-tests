@@ -1,0 +1,14 @@
+{
+  "name": "com.yanicksenn.unity.tests",
+  "version": "1.0.0",
+  "displayName": "Tests",
+  "description": "Unity3d package containing test utilities.",
+  "unity": "2020.3",
+  "unityRelease": "30f1",
+  "dependencies": { },
+  "keywords": [ ],
+  "author": {
+    "name": "Yanick Senn",
+    "email": "info@yanicksenn.com"
+  }
+}
