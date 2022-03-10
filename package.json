@@ -1,6 +1,6 @@
 {
   "name": "com.yanicksenn.unity.tests",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "displayName": "Tests",
   "description": "Unity3d package containing test utilities.",
   "unity": "2020.3",
