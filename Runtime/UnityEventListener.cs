@@ -33,7 +33,7 @@ namespace Tests
         /// Count an invocation with payload.
         /// </summary>
         /// <param name="payload">Payload</param>
-        public void Invoke(object payload)
+        public void Invoke<T>(T payload)
         {
             _invocationsWithPayload.TryGetValue(payload, out var invocations);
             _invocationsWithPayload[payload] = invocations + 1;
