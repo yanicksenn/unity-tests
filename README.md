@@ -8,7 +8,7 @@ Feedback is welcome.
 1. Open "Package Manager"
 2. Choose "Add package from git URL..."
 3. Use the HTTPS URL of this repository:
-   `https://github.com/yanicksenn/unity-tests.git`
+   `https://github.com/yanicksenn/unity-tests.git#1.2.0`
 4. Click "Add"
 
 ## Usage
