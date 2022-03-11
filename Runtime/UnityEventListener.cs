@@ -12,9 +12,13 @@ namespace Tests
         private readonly string _name;
         private readonly Dictionary<object, int> _invocationsWithPayload;
         private int _invocations = 0;
+        private int _invocationsWithNull = 0;
         
         public string Name => _name;
-        public int Invocations => _invocations + _invocationsWithPayload.Values.Sum(x => x);
+        public int Invocations => _invocations 
+          + _invocationsWithNull 
+          + _invocationsWithPayload.Values.Sum(x => x);
+        
         public UnityEventListener(string name)
         {
             _name = name;
@@ -35,8 +39,15 @@ namespace Tests
         /// <param name="payload">Payload</param>
         public void Invoke<T>(T payload)
         {
-            _invocationsWithPayload.TryGetValue(payload, out var invocations);
-            _invocationsWithPayload[payload] = invocations + 1;
+            if (payload == null)
+            {
+                _invocationsWithNull++;
+            }
+            else
+            {
+                _invocationsWithPayload.TryGetValue(payload, out var invocations);
+                _invocationsWithPayload[payload] = invocations + 1;
+            }
         }
 
         /// <summary>
@@ -71,9 +82,9 @@ namespace Tests
         /// Asserts that at least one invocation with the provided payload took place. 
         /// </summary>
         /// <param name="payload">Payload</param>
-        public void AssertInvocationWithPayload(object payload)
+        public void AssertInvocationWithPayload<T>(T payload)
         {
-            _invocationsWithPayload.TryGetValue(payload, out var actualInvocations);
+            var actualInvocations = GetInvocationsForPayload(payload);
             Assert.IsTrue(actualInvocations > 0, $"Event {_name} for {payload} should have been invoked at least once");
         }
         
@@ -81,9 +92,9 @@ namespace Tests
         /// Asserts that no invocations with the provided payload took place.
         /// </summary>
         /// <param name="payload">Payload</param>
-        public void AssertNoInvocationWithPayload(object payload)
+        public void AssertNoInvocationWithPayload<T>(T payload)
         {
-            _invocationsWithPayload.TryGetValue(payload, out var actualInvocations);
+            var actualInvocations = GetInvocationsForPayload(payload);
             Assert.IsTrue(actualInvocations == 0, $"Event {_name} for {payload} should not have been invoked");
         }
         
@@ -92,10 +103,19 @@ namespace Tests
         /// </summary>
         /// <param name="payload">Payload</param>
         /// <param name="expectedInvocations">Amount of invocations</param>
-        public void AssertInvocationsWithPayload(object payload, int expectedInvocations)
+        public void AssertInvocationsWithPayload<T>(T payload, int expectedInvocations)
         {
-            _invocationsWithPayload.TryGetValue(payload, out var actualInvocations);
+            var actualInvocations = GetInvocationsForPayload(payload);
             Assert.AreEqual(expectedInvocations, actualInvocations, $"Event {_name} for {payload} should have been invoked {expectedInvocations} times but was {actualInvocations}");
+        }
+
+        private int GetInvocationsForPayload<T>(T payload)
+        {
+            if (payload == null)
+                return _invocationsWithNull;
+            
+            _invocationsWithPayload.TryGetValue(payload, out var actualInvocations);
+            return actualInvocations;
         }
     }
 }

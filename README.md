@@ -19,70 +19,80 @@ Feedback is welcome.
 ## UnityEventListener
 
 ### Example
-Assumed a behaviour with `UnityEvents` should be tested.
-`MyBehaviour` contains a plain `UnityEvent` and a `UnityEvent` with string payload.
+Assume a behaviour with `UnityEvents` should be tested.
+
+We have two kinds of events, an empty event and an event with an int as payload.
+
+```c#
+[Serializable]
+public class EmptyEvent : UnityEvent { }
+
+[Serializable]
+public class EventWithPayload : UnityEvent<string> { }
+```
+
+`MyBehaviour` contains an instance of both events.
 
 ```c#
 public class MyBehaviour : MonoBehaviour
 {
-   [field: SerializeField] 
-   public UnityEvent UnityEvent1 { get; } = new UnityEvent();
-   
-   [field: SerializeField] 
-   public UnityEvent<string> UnityEvent2 { get; } = new UnityEvent<string>();
+    [SerializeField] 
+    private EmptyEvent emptyEvent = new EmptyEvent();
+    public EmptyEvent EmptyEvent => emptyEvent;
+
+    [SerializeField] 
+    private EventWithPayload eventWithPayload = new EventWithPayload();
+    public EventWithPayload EventWithPayload => eventWithPayload;
 }
 ```
 
-The associated test can create and assign the `UnityEventListener` to the `UnityEvent`.
+The associated test creates a `GameObject` and assigns a `MyBehaviour` component.
+In each test case an instance of the `UnityEventListener` is assigned to the `UnityEvents` of `MyBehaviour`.
 
 ```c#
-public class MyBehaviourTest 
+public class Test
 {
-   [Test]
-   public void AssertInvocationOfUnityEvent1()
-   {
-      var gameObject = new GameObject();
-      var behaviour = gameObject.AddComponent<MyBehaviour>();
-      var listener = new UnityEventListener("UnityEvent1");
-      behaviour.UnityEvent1.AddListener(listener.Invoke);
-      
-      behaviour.UnityEvent1.Invoke();
-      behaviour.UnityEvent1.Invoke();
-      behaviour.UnityEvent1.Invoke();
-      
-      listener.AssertInvocation();
-      listener.AssertInvocations(3);
-   }
-   
-   [Test]
-   public void AssertInvocationOfUnityEvent2()
-   {
-      var gameObject = new GameObject();
-      var behaviour = gameObject.AddComponent<MyBehaviour>();
-      var listener = new UnityEventListener("UnityEvent2");
-      behaviour.UnityEvent2.AddListener(listener.Invoke);
-      
-      behaviour.UnityEvent2.Invoke("Str1");
-      behaviour.UnityEvent2.Invoke("Str1");
-      behaviour.UnityEvent2.Invoke("Str2");
-      
-      listener.AssertInvocation();
-      listener.AssertInvocations(3);
-      listener.AssertInvocationWithPayload("Str1");
-      listener.AssertInvocationsWithPayload("Str1", 2);
-      listener.AssertInvocationWithPayload("Str2");
-      listener.AssertInvocationsWithPayload("Str2", 1);
-      listener.AssertNoInvocationWithPayload("Str3");
-   }
+    private GameObject _gameObject;
+    private MyBehaviour _behaviour;
+    private UnityEventListener _listener;
+    
+    [SetUp]
+    public void SetUp()
+    {
+        _gameObject = new GameObject();
+        _behaviour = _gameObject.AddComponent<MyBehaviour>();
+        _listener = new UnityEventListener("Event");
+    }
+    
+    [Test]
+    public void AssertInvocationOfEmptyEvent()
+    {
+        _behaviour.EmptyEvent.AddListener(_listener.Invoke);
+        _behaviour.EmptyEvent.Invoke();
+        _behaviour.EmptyEvent.Invoke();
+        _behaviour.EmptyEvent.Invoke();
+  
+        _listener.AssertInvocation();
+        _listener.AssertInvocations(3);
+    }
+
+    [Test]
+    public void AssertInvocationOfEventWithPayload()
+    {
+        _behaviour.EventWithPayload.AddListener(_listener.Invoke);
+        _behaviour.EventWithPayload.Invoke("Str1");
+        _behaviour.EventWithPayload.Invoke("Str1");
+        _behaviour.EventWithPayload.Invoke("Str2");
+  
+        _listener.AssertInvocation();
+        _listener.AssertInvocations(3);
+        _listener.AssertInvocationWithPayload("Str1");
+        _listener.AssertInvocationsWithPayload("Str1", 2);
+        _listener.AssertInvocationWithPayload("Str2");
+        _listener.AssertInvocationsWithPayload("Str2", 1);
+        _listener.AssertNoInvocationWithPayload("Str3");
+    }
 }
-```
-
-Add the listeners `Invoke` method to the `UnityEvent`.
-
-```c#
-var listener = new UnityEventListener("Event-Name");
-behaviour.UnityEvent1.AddListener(listener.Invoke);
-behaviour.UnityEvent2.AddListener(listener.Invoke);
 ```
 
 ### Assert-Methods

@@ -5,10 +5,13 @@ namespace Tests
 {
     public class UnityEventListenerTest
     {
+        private static readonly string[] TestPayloads = { TestPayloadNull, TestPayloadA, TestPayloadB };
+        
         private const string TestName = "Test-Name";
+        private const string TestPayloadNull = null;
         private const string TestPayloadA = "A";
         private const string TestPayloadB = "B";
-        
+
         private UnityEventListener _listener;
 
         [SetUp]
@@ -87,54 +90,44 @@ namespace Tests
             Assert.Throws<AssertionException>(() => _listener.AssertInvocations(invocations));
         }
 
-        [Test]
-        public void AssertInvocationWithPayload()
+        [Test, TestCaseSource(nameof(TestPayloads))]
+        public void AssertInvocationWithPayload(string payload)
         {
-            InvokeRandomlyWithObject(_listener, TestPayloadA);
-            InvokeRandomlyWithObject(_listener, TestPayloadB);
-            Assert.DoesNotThrow(() => _listener.AssertInvocationWithPayload(TestPayloadA));
-            Assert.DoesNotThrow(() => _listener.AssertInvocationWithPayload(TestPayloadB));
+            InvokeRandomlyWithObject(_listener, payload);
+            Assert.DoesNotThrow(() => _listener.AssertInvocationWithPayload(payload));
         }
 
-        [Test]
-        public void AssertInvocationWithPayloadFails()
+        [Test, TestCaseSource(nameof(TestPayloads))]
+        public void AssertInvocationWithPayloadFails(string payload)
         {
-            Assert.Throws<AssertionException>(() => _listener.AssertInvocationWithPayload(TestPayloadA));
-            Assert.Throws<AssertionException>(() => _listener.AssertInvocationWithPayload(TestPayloadB));
+            Assert.Throws<AssertionException>(() => _listener.AssertInvocationWithPayload(payload));
         }
 
-        [Test]
-        public void AssertNoInvocationWithPayload()
+        [Test, TestCaseSource(nameof(TestPayloads))]
+        public void AssertNoInvocationWithPayload(string payload)
         {
-            InvokeRandomlyWithObject(_listener, TestPayloadA);
-            InvokeRandomlyWithObject(_listener, TestPayloadB);
-            Assert.Throws<AssertionException>(() => _listener.AssertNoInvocationWithPayload(TestPayloadA));
-            Assert.Throws<AssertionException>(() => _listener.AssertNoInvocationWithPayload(TestPayloadB));
+            InvokeRandomlyWithObject(_listener, payload);
+            Assert.Throws<AssertionException>(() => _listener.AssertNoInvocationWithPayload(payload));
         }
 
-        [Test]
-        public void AssertNoInvocationWithPayloadFails()
+        [Test, TestCaseSource(nameof(TestPayloads))]
+        public void AssertNoInvocationWithPayloadFails(string payload)
         {
-            Assert.DoesNotThrow(() => _listener.AssertNoInvocationWithPayload(TestPayloadA));
-            Assert.DoesNotThrow(() => _listener.AssertNoInvocationWithPayload(TestPayloadB));
+            Assert.DoesNotThrow(() => _listener.AssertNoInvocationWithPayload(payload));
         }
 
-        [Test]
-        public void AssertInvocationsWithPayload()
+        [Test, TestCaseSource(nameof(TestPayloads))]
+        public void AssertInvocationsWithPayload(string payload)
         {
-            var invocationsA = InvokeRandomlyWithObject(_listener, TestPayloadA);
-            var invocationsB = InvokeRandomlyWithObject(_listener, TestPayloadB);
-            Assert.DoesNotThrow(() => _listener.AssertInvocationsWithPayload(TestPayloadA, invocationsA));
-            Assert.DoesNotThrow(() => _listener.AssertInvocationsWithPayload(TestPayloadB, invocationsB));
+            var invocations = InvokeRandomlyWithObject(_listener, payload);
+            Assert.DoesNotThrow(() => _listener.AssertInvocationsWithPayload(payload, invocations));
         }
 
-        [Test]
-        public void AssertInvocationsWithPayloadFails()
+        [Test, TestCaseSource(nameof(TestPayloads))]
+        public void AssertInvocationsWithPayloadFails(string payload)
         {
-            var invocationsA = InvokeRandomlyWithObject(_listener, TestPayloadA) + 1;
-            var invocationsB = InvokeRandomlyWithObject(_listener, TestPayloadB) + 1;
-            Assert.Throws<AssertionException>(() => _listener.AssertInvocationsWithPayload(TestPayloadA, invocationsA));
-            Assert.Throws<AssertionException>(() => _listener.AssertInvocationsWithPayload(TestPayloadB, invocationsB));
+            var invocations = InvokeRandomlyWithObject(_listener, payload) + 1;
+            Assert.Throws<AssertionException>(() => _listener.AssertInvocationsWithPayload(payload, invocations));
         }
 
         private static int InvokeRandomly(UnityEventListener listener)
