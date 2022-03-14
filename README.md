@@ -12,9 +12,30 @@ Feedback is welcome.
 4. Click "Add"
 
 ## Usage
+- [AbstractTest](#user-content-abstracttest)
 - [UnityEventListener](#user-content-unityeventlistener)
   - [Example](#user-content-example)
   - [Assert-Methods](#user-content-assert-methods)
+
+## AbstractTest
+
+Because `GameObjects` are not cleaned up in between unity tests you'll have to take care of that by yourself.
+
+Instead of manually adding a cleanup method and invoking it after every test you can simply inherit your test-class from `AbstractTest`.
+
+The following test class automatically cleans up all randomly generated `GameObjects` ensuring independent test cases.
+
+```c#
+public class MyTests : AbstractTest 
+{
+    [Test]
+    public void AssertCreationOfGameObjects()
+    {
+        for (var i = 0; i < Random.Range(1, 100); i++)
+            new GameObject { name = $"Instance {i}" };
+    }
+}
+```
 
 ## UnityEventListener
 
