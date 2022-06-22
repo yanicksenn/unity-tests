@@ -13,6 +13,7 @@ Feedback is welcome.
 
 ## Usage
 - [AbstractTest](#user-content-abstracttest)
+- [GameObjectBuilder](#user-content-gameobjectbuilder)
 - [UnityEventListener](#user-content-unityeventlistener)
   - [Example](#user-content-example)
   - [Assert-Methods](#user-content-assert-methods)
@@ -36,6 +37,12 @@ public class MyTests : AbstractTest
     }
 }
 ```
+
+## GameObjectBuilder
+
+Sometimes you want to test that the right thing happens during the `Awake` hook of a `GameObject`.
+
+TODO
 
 ## UnityEventListener
 
